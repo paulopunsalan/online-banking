@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Customer Dashboard</title>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <header class="topbar">
+            <div>
+                <h2>Online Banking</h2>
+                <span>Customer Portal</span>
+            </div>
+            <a href="/logout" class="logout">Logout </a>
+        </header>
+        <main class="container">
+            <div class="page-header">
+                <div>
+                    <h1>Welcome, <%= account.first_name %></h1>
+                    <p>Manage your bank account.</p>
+                </div>
+            </div>
+
+            <% if (success) { %>
+                <div class="alert success">
+                    <%= success %>
+                </div>
+            <% } %>
+
+            <% if (error) { %>
+                <div class="alert error">
+                    <%= error %>
+                </div>
+            <% } %>
+
+            <!-- ACCOUNT SUMMARY -->
+            <section class="account-summary">
+                <div class="balance-card">
+                    <span>Available Balance</span>
+
+                    <h1>
+                        ₱<%= Number(
+                            account.balance
+                        ).toLocaleString(
+                            'en-PH',
+                            {
+                                minimumFractionDigits: 2
+                            }
+                        ) %>
+                    </h1>
+
+                    <p>
+                        Account:
+                        <strong>
+                            <%= account.account_number %>
+                        </strong>
+                    </p>
+
+                </div>
+
+                <div class="info-card">
+                    <span>Account Holder</span>
+
+                    <h3>
+                        <%= account.first_name %>
+                        <%= account.last_name %>
+                    </h3>
+
+                    <p>
+                        <%= account.email %>
+                    </p>
+                </div>
+
+                <div class="info-card">
+                    <span>Account Type</span>
+
+                    <h3>
+                        <%= account.account_type %>
+                    </h3>
+
+                    <p>
+                        Status:
+                        <strong>
+                            <%= account.status %>
+                        </strong>
+                    </p>
+                </div>
+            </section>
+
+            <!-- BANKING OPERATIONS -->
+            <section class="operations">
+
+                <!-- DEPOSIT -->
+                <div class="card">
+                    <h2>Deposit Money</h2>
+
+                    <p class="description">
+                        Add money to your bank account.
+                    </p>
+
+                    <form
+                        action="/customer/deposit" method="POST">
+
+                        <input type="hidden"
+                            name="account_number"
+                            value="<%= account.account_number %>"
+                        >
+
+                        <label>Deposit Amount</label>
+
+                        <div class="money-input">
+                            <span>₱</span>
+
+                            <input type="number"
+                                name="amount"
+                                min="1"
+                                step="0.01"
+                                placeholder="0.00"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn primary">
+                            Deposit Money
+                        </button>
+                    </form>
+                </div>
+
+                <!-- WITHDRAW -->
+                <div class="card">
+                    <h2>Withdraw Money</h2>
+
+                    <p class="description">
+                        Withdraw money from your account.
+                    </p>
+
+                    <form action="/customer/withdraw" method="POST">
+
+                        <input type="hidden"
+                            name="account_number"
+                            value="<%= account.account_number %>"
+                        >
+
+                        <label>
+                            Withdrawal Amount
+                        </label>
+                        <div class="money-input">
+                            <span>₱</span>
+                            <input type="number"
+                                name="amount"
+                                min="1"
+                                step="0.01"
+                                placeholder="0.00"
+                                required
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="btn danger">
+                            Withdraw Money
+                        </button>
+
+                    </form>
+                </div>
+            </section>
+
+            <!-- TRANSACTION HISTORY -->
+            <section class="card">
+                <div class="section-header">
+                    <div>
+                        <h2>
+                            Transaction History
+                        </h2>
+                        <p>
+                            Recent account activity
+                        </p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Type</th>
+                                <th>Description</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            <% if (transactions.length === 0) { %>
+                                <tr>
+                                    <td
+                                        colspan="4"
+                                        class="empty">
+                                        No transactions yet.
+                                    </td>
+                                </tr>
+                            <% } %>
+
+                            <% transactions.forEach(transaction => { %>
+                            <tr>
+                                <td>
+                                    <%= new Date(
+                                        transaction.transaction_date
+                                    ).toLocaleString(
+                                        'en-PH'
+                                    ) %>
+                                </td>
+
+                                <td>
+                                    <% if (
+                                        transaction.transaction_type
+                                        === "Deposit"
+                                    ) { %>
+
+                                        <span class="transaction deposit">
+                                            Deposit
+                                        </span>
+                                    <% } else { %>
+
+                                        <span class="transaction withdrawal">
+                                            Withdrawal
+                                        </span>
+                                    <% } %>
+                                </td>
+
+                                <td>
+                                    <%= transaction.description %>
+                                </td>
+
+                                <td class="money">
+                                    <% if (
+                                        transaction.transaction_type
+                                        === "Deposit"
+                                    ) { %>
+                                        +
+                                    <% } else { %>
+                                        -
+                                    <% } %>
+                                    ₱<%= Number(
+                                        transaction.amount
+                                    ).toLocaleString(
+                                        'en-PH',
+                                        {
+                                            minimumFractionDigits: 2
+                                        }
+                                    ) %>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>

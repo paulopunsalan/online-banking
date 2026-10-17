@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Admin Dashboard</title>
+        <link rel="stylesheet" href="/style.css">
+    </head>
+    <body>
+        <header class="topbar">
+            <div>
+                <h2>Online Banking</h2>
+                <span>Administrator</span>
+            </div>
+            <a href="/logout"
+            class="logout">
+                Logout
+            </a>
+        </header>
+        <main class="container">
+            <div class="page-header">
+                <div>
+                    <h1>Admin Dashboard</h1>
+                    <p>Manage customer accounts.</p>
+                </div>
+
+                <a
+                    href="/admin/create"
+                    class="btn primary">
+                    + Create Customer
+                </a>
+            </div>
+
+            <section class="card">
+                <h2>Customer Accounts</h2>
+                <div class="table-container">
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Customer</th>
+                                <th>Username</th>
+                                <th>Account</th>
+                                <th>Type</th>
+                                <th>Balance</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% customers.forEach(customer => { %>
+                            <tr>
+                                <td>
+                                    <%= customer.customer_id %>
+                                </td>
+                                <td>
+                                    <strong>
+                                        <%= customer.first_name %>
+                                        <%= customer.last_name %>
+                                    </strong>
+                                </td>
+                                <td>
+                                    <%= customer.username %>
+                                </td>
+                                <td>
+                                    <%= customer.account_number %>
+                                </td>
+                                <td>
+                                    <%= customer.account_type %>
+                                </td>
+                                <td class="money">
+                                    ₱<%= Number(
+                                        customer.balance
+                                    ).toLocaleString(
+                                        'en-PH',
+                                        {
+                                            minimumFractionDigits: 2
+                                        }
+                                    ) %>
+                                </td>
+                                <td>
+                                    <span class="status">
+                                        <%= customer.status %>
+                                    </span>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </body>
+</html>
